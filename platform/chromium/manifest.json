@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
 
-    "name": "uBlock Origin",
+    "name": "uBlock Origin JACOB",
     "version": "1.6.9",
 
     "default_locale": "en",
@@ -15,9 +15,9 @@
         "default_icon": {
             "19": "img/browsericons/icon19.png",
             "38": "img/browsericons/icon38.png"
-        },
-        "default_title": "uBlock Origin",
-        "default_popup": "popup.html"
+        }
+        //"default_title": "uBlock Origin",
+        //"default_popup": "popup.html"
     },
 
     "author": "All uBlock Origin contributors",
@@ -33,7 +33,8 @@
         },
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["js/contentscript-end.js"],
+            "js": ["js/contentscript-end.js", "lib/pt.min.js"],
+            "css": ["css/content_style.css"],
             "run_at": "document_end",
             "all_frames": true
         },
@@ -51,6 +52,7 @@
         "page": "options_ui.html"
     },
     "permissions": [
+        "activeTab",
         "contextMenus",
         "privacy",
         "storage",

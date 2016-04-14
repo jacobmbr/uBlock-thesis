@@ -188,7 +188,7 @@ vAPI.messaging.setup(onMessage);
 /******************************************************************************/
 /******************************************************************************/
 
-// channel: popupPanel
+// channel: popupPanel (& TODO Jacob's hacky contentscript channel!) 
 
 (function() {
 
@@ -445,12 +445,31 @@ vAPI.messaging.listen('popupPanel', onMessage);
 
 /******************************************************************************/
 
+
+var onMessage = function(request, sender, callback) {
+    var pageStore = µb.pageStoreFromTabId(sender.tab.id);
+
+    if(request.what === "jacobsRequest") {
+      chrome.tabs.captureVisibleTab(null,{format:"png",quality:100},function(img) {
+        callback({
+          screenshot: img,
+          hostNameDict: getHostnameDict(pageStore.hostnameToCountMap)
+        });
+      });
+    }
+};
+
+vAPI.messaging.listen('screenshot', onMessage);
+
+/******************************************************************************/
+
 })();
 
 /******************************************************************************/
 /******************************************************************************/
 
-// channel: contentscript
+// channel: contentscript 
+// (TODO currently DEACTIVATED and hacked into the popup channel closure to provide data to content script!)
 
 (function() {
 
@@ -479,7 +498,7 @@ var filterRequests = function(pageStore, details) {
         return requests;
     }
 
-    //console.debug('messaging.js/contentscript-end.js: processing %d requests', requests.length);
+    console.debug('messaging.js/contentscript-end.js: processing %d requests', requests.length);
 
     var hostnameFromURI = µb.URI.hostnameFromURI;
     var redirectEngine = µb.redirectEngine;
@@ -559,6 +578,9 @@ var onMessage = function(request, sender, callback) {
             response.result = filterRequests(pageStore, request);
         }
         break;
+    case "jacobsRequest":
+      response = {"hi": "yup"}
+      break;
 
     default:
         return vAPI.messaging.UNHANDLED;
@@ -1175,6 +1197,22 @@ vAPI.messaging.listen('documentBlocked', onMessage);
 /******************************************************************************/
 /******************************************************************************/
 
+// channel: screenshot
+
+(function() {
+
+'use strict';
+
+/******************************************************************************/
+
+var µb = µBlock;
+
+/******************************************************************************/
+
+
+/******************************************************************************/
+
+})();
 // channel: scriptlets
 
 (function() {

@@ -1,0 +1,84 @@
+.textmarker { 
+  display:inline;
+  background-size: 200% auto;
+  -webkit-background-size: 200% auto;
+  -moz-background-size: 200% auto;
+  background-position: 100% 0;    
+  padding: 10px 10px 10px 0px ;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, rgba(255,0,0,0.9) 50%);
+  transition: background-position 0.5s ease-in-out;
+}
+#ext-canvas-container {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: black;
+  z-index:1000000091 !important;
+}
+.ext-canvas {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  margin: 0;
+  background-color: white;
+  transform: perspective(400px)
+}
+#space {
+}
+#ext-ptCanvas{
+  position: fixed;
+  left: 0px;
+  top: 0px;
+}
+#ext-canvas {
+  z-index: 1000000092;
+}
+
+.ext-canvas-hide {
+  display:none;
+}
+.ext-canvas-slide {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+
+@keyframes ext-canvas-slide  {
+  to {
+    transform: scale3d(.2, .3, .3) translate3d(-2000px, 160px, 0) perspective(1000px) rotate3d(0, 1, 0, 20deg);
+    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+  }
+
+}
+
+.ext-canvas-slide {
+  -webkit-animation-name: ext-canvas-slide;
+  animation-name: ext-canvas-slide;
+}
+.typed-cursor{
+    background-color:transparent !important;
+    opacity: 1;
+    -webkit-animation: blink 0.7s infinite;
+    -moz-animation: blink 0.7s infinite;
+    animation: blink 0.7s infinite;
+}
+
+/* animated cursor */
+@keyframes blink{
+    0% { opacity:1; }
+    50% { opacity:0; }
+    100% { opacity:1; }
+}
+@-webkit-keyframes blink{
+    0% { opacity:1; }
+    50% { opacity:0; }
+    100% { opacity:1; }
+}
+@-moz-keyframes blink{
+    0% { opacity:1; }
+    50% { opacity:0; }
+    100% { opacity:1; }
+}
+
