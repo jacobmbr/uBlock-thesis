@@ -449,10 +449,11 @@ vAPI.messaging.listen('popupPanel', onMessage);
 var onMessage = function(request, sender, callback) {
     var pageStore = µb.pageStoreFromTabId(sender.tab.id);
 
-    if(request.what === "jacobsRequest") {
-      chrome.tabs.captureVisibleTab(null,{format:"png",quality:100},function(img) {
+    if(request.what === "getScreenshotAndSiteInfo") {
+      chrome.tabs.captureVisibleTab(null,{format:"png",quality:60},function(img) {
         callback({
           screenshot: img,
+          pageStore: pageStore,
           hostNameDict: getHostnameDict(pageStore.hostnameToCountMap)
         });
       });

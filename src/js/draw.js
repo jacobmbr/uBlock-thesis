@@ -1,12 +1,14 @@
 (function() {
 
-var canvas, ctx, container, ptCanvas, space, hostNameDict;
+  console.log("draw.js")
+var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore;
 var body = document.querySelector("body");
 
 vAPI.messaging.send(
   'screenshot',
-  { what: 'jacobsRequest'},
+  { what: 'getScreenshotAndSiteInfo'},
   function(res) {
+    pageStore = res.pageStore 
     hostNameDict = res.hostNameDict;
     doItAll(res.screenshot);
   }
@@ -43,8 +45,8 @@ function doItAll(msg) {
   space = new CanvasSpace().display("#ext-canvas-container");
   makeSpace();
 
-  //canvas.classList.add("ext-canvas-slide");
-  canvas.classList.add("ext-canvas-hide");
+  canvas.classList.add("ext-canvas-slide");
+  //canvas.classList.add("ext-canvas-hide");
 
   window.addEventListener('resize', resizeCanvas, false);
 }
@@ -60,6 +62,53 @@ function resizeCanvas() {
 
 // –––––––––
 
+function makeCurveSpace() {
+
+  var colors = {
+    a1: "#ff2d5d", a2: "#42dc8e", a3: "#2e43eb", a4: "#ffe359",
+    b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
+  };
+  var form = new Form( space );
+
+
+  //// 2. Create Elements
+  var pts = [];
+  var center = space.size.$divide(2);
+  var line = new Line(center).to( space.size );
+  var target = new Vector( center );
+  //var target = new Vector( 150, 400 );
+
+  var trackers = Object.keys(hostNameDict);
+
+  for (var i=0; i<trackers.length; i++) {
+    
+    pts.push( new PointSet( target ) );
+  }
+
+
+  //// 3. Visualize, Animate, Interact
+  space.add({
+    animate: function(time, fps, context) {
+
+      for (var i=0; i<pts.length; i++) {
+
+        var pt = pts[i];
+        form.stroke( "#fff", 2 );
+        form.curve( new Curve( target ).to( target.$add(100, 20*i), target.$add(200, 30*i) ).bezier(20) );
+
+        // opacity of line derived from distance to the line
+        //var opacity = Math.min( 0.8, 1 - Math.abs( line.getDistanceFromPoint( pt ) ) / r );
+        //form.stroke( "rgba(255,255,255," + opacity + ")", 2*(i%20)/20 ).fill( false ).line( ln );
+        //var cd = hostNameDict[trackers[i]];
+        //form.font(15,"monospace").fill("white").text(new Point(pt), trackers[i] + `  ${cd.allowCount} / ${cd.blockCount} (${cd.totalBlockCount}/${cd.totalAllowCount})`, 10000, 10, 15 )
+      }
+    }
+  });
+
+  // 4. Start playing
+  space.bindMouse();
+  space.play();
+}
 function makeSpace() {
 
   var colors = {
@@ -73,13 +122,13 @@ function makeSpace() {
   var pts = [];
   var center = space.size.$divide(2);
   var line = new Line(center).to( space.size );
-  var target = new Vector( 300, 300 );
-  //var target = new Vector( 150, 400 );
+  //var target = new Vector( center );
+  var target = new Vector( 150, 400 );
 
-  var trackers = Object.keys(hostNameDict);
 
   var count = Math.random() * 30 + 30;
   var r = Math.min( space.size.x, space.size.y ) * 0.8;
+  var trackers = Object.keys(hostNameDict);
   for (var i=0; i<trackers.length; i++) {
     var p = new Vector( Math.random()*r-Math.random()*r, Math.random()*r-Math.random()*r );
     p.moveBy( center ).rotate2D( i*Math.PI/count, center );
@@ -95,7 +144,7 @@ function makeSpace() {
 
         // rotate the points slowly
         var pt = pts[i];
-        pt.rotate2D( Const.one_degree / 10, center );
+        pt.rotate2D( Const.one_degree / 20, center );
         form.stroke( false ).fill( colors["a" + (i % 4)] ).point( pt, 1 );
 
         // get line from pt to the mouse line
@@ -105,7 +154,9 @@ function makeSpace() {
         var opacity = Math.min( 0.8, 1 - Math.abs( line.getDistanceFromPoint( pt ) ) / r );
         form.stroke( "rgba(255,255,255," + opacity + ")", 2*(i%20)/20 ).fill( false ).line( ln );
         var cd = hostNameDict[trackers[i]];
-        form.font(15,"monospace").fill("white").text(new Point(pt), trackers[i] + `  ${cd.allowCount} / ${cd.blockCount} (${cd.totalBlockCount}/${cd.totalAllowCount})`, 10000, 10, 10)
+        var ptV = new Vector( pt );
+        //form.fill("rgba(0,0,0,0.8").stroke("#eee").rect( new Pair(ptV.$add(10,0)).to(ptV.$add(15*trackers[i].length + 30,15) ))
+        form.font(15,"monospace").fill("white").text(new Point(pt), trackers[i] + `  ${cd.allowCount} / ${cd.blockCount} (${cd.totalBlockCount}/${cd.totalAllowCount})`, 10000, 10, 15 )
       }
     }
   });

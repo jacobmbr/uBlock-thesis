@@ -40,10 +40,9 @@
   display:none;
 }
 .ext-canvas-slide {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   animation-fill-mode: both;
 }
-
 
 @keyframes ext-canvas-slide  {
   to {
@@ -81,4 +80,3 @@
     50% { opacity:0; }
     100% { opacity:1; }
 }
-
