@@ -25,10 +25,12 @@
   background-color: white;
   transform: perspective(400px)
 }
+
 #space {
 }
-#ext-ptCanvas{
-  position: fixed;
+
+#ext-ptCanvas, #space{
+  position: absolute;
   left: 0px;
   top: 0px;
 }
@@ -40,7 +42,7 @@
   display:none;
 }
 .ext-canvas-slide {
-  animation-duration: 0.3s;
+  animation-duration: 1.0s;
   animation-fill-mode: both;
 }
 

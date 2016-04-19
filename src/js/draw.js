@@ -27,25 +27,25 @@ function doItAll(msg) {
   //ptCanvas.height = window.innerHeight;
   //ptCanvas.classList.add("ext-canvas");
 
-  canvas = document.createElement("canvas");
-  canvas.setAttribute("id", "ext-canvas");
-  canvas.classList.add("ext-canvas");
-  container.appendChild(canvas);
+  image = document.createElement("img");
+  image.setAttribute("id", "ext-image");
+  image.classList.add("ext-image");
+  container.appendChild(image);
 
-  ctx = canvas.getContext('2d');
+  //ctx = canvas.getContext('2d');
   resizeCanvas();
 
-  var img = new Image;
-  img.onload = function(){
-    ctx.drawImage(img,0,0, canvas.width, canvas.height); // Or at whatever offset you like
-  };
-  img.src = msg;
+  //var img = new Image;
+  //img.onload = function(){
+    //ctx.drawImage(img,0,0, canvas.width, canvas.height); 
+  //};
+  image.src = msg;
 
   body.appendChild(container);
   space = new CanvasSpace().display("#ext-canvas-container");
   makeSpace();
 
-  canvas.classList.add("ext-canvas-slide");
+  image.classList.add("ext-canvas-slide");
   //canvas.classList.add("ext-canvas-hide");
 
   window.addEventListener('resize', resizeCanvas, false);
@@ -55,8 +55,8 @@ function drawStuff() {
 }
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  image.width = window.innerWidth;
+  image.height = window.innerHeight;
   drawStuff();
 }
 
