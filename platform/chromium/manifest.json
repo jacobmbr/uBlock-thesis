@@ -33,7 +33,7 @@
         },
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["js/contentscript-end.js", "lib/pt.js"],
+            "js": ["js/contentscript-end.js", "lib/pt.js", "js/draw-indicator.js"],
             "css": ["css/content_style.css"],
             "run_at": "document_end",
             "all_frames": true

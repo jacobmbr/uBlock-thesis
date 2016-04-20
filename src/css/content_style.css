@@ -1,12 +1,24 @@
-.textmarker { 
+.textmarker {
   display:inline;
   background-size: 200% auto;
   -webkit-background-size: 200% auto;
   -moz-background-size: 200% auto;
-  background-position: 100% 0;    
+  background-position: 100% 0;
   padding: 10px 10px 10px 0px ;
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, rgba(255,0,0,0.9) 50%);
   transition: background-position 0.5s ease-in-out;
+}
+#indicator-container {
+  height: 50px;
+  width: 50px;
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  opacity: 0.5;
+}
+#indicator-container:hover{
+  opacity:1;
+  transition: all 0.3s ease-in-out;
 }
 #ext-canvas-container {
   height: 100%;
@@ -39,11 +51,15 @@
 }
 
 .ext-canvas-hide {
-  display:none;
+  transform: scale(0.2);
+  opacity: 0;
+  transition: all 0.5s ease-out;
 }
 .ext-canvas-slide {
   animation-duration: 1.0s;
   animation-fill-mode: both;
+  animation-direction: alternate;
+  animation-iteration-count: 2;
 }
 
 @keyframes ext-canvas-slide  {
@@ -53,7 +69,6 @@
   }
 
 }
-
 .ext-canvas-slide {
   -webkit-animation-name: ext-canvas-slide;
   animation-name: ext-canvas-slide;

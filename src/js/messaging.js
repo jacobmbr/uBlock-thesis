@@ -458,6 +458,13 @@ var onMessage = function(request, sender, callback) {
         });
       });
     }
+
+    if(request.what === "getCounts") {
+      callback({
+        allow: pageStore.perLoadAllowedRequestCount,
+        block: pageStore.perLoadBlockedRequestCount
+      });
+    }
 };
 
 vAPI.messaging.listen('screenshot', onMessage);
