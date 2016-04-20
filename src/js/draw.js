@@ -75,7 +75,6 @@ function makeCurveSpace() {
   var center = space.size.$divide(2);
   var line = new Line(center).to( space.size );
   var target = new Vector( center );
-  //var target = new Vector( 150, 400 );
 
   var trackers = Object.keys(hostNameDict);
 
@@ -83,8 +82,6 @@ function makeCurveSpace() {
     pts.push( new PointSet( target ) );
   }
 
-
-  //// 3. Visualize, Animate, Interact
   space.add({
     animate: function(time, fps, context) {
 
@@ -97,7 +94,6 @@ function makeCurveSpace() {
     }
   });
 
-  // 4. Start playing
   space.bindMouse();
   space.play();
 }
@@ -112,46 +108,47 @@ function makeSpace() {
 
   //// 2. Create Elements
   var pts = [];
-  var center = space.size.$divide(2);
+  var center = new Vector( space.size.x/2, space.size.y/2 );
+  var centerleft = new Vector( 0, space.size.y/2 );
   var line = new Line(center).to( space.size );
-  //var target = new Vector( center );
-  var target = new Vector( 150, 400 );
+  var target = new Vector( 0, space.size.y/2 );
+  var origin = new Vector(0,0);
+  //var target = new Vector( 150, 400 );
 
-
-  var count = Math.random() * 30 + 30;
-  var r = Math.min( space.size.x, space.size.y ) * 0.8;
-  var trackers = Object.keys(hostNameDict);
-  for (var i=0; i<trackers.length; i++) {
-    var p = new Vector( Math.random()*r-Math.random()*r, Math.random()*r-Math.random()*r );
-    p.moveBy( center ).rotate2D( i*Math.PI/count, center );
-    pts.push( p );
+  for (var i=0; i<Object.keys(hostNameDict).length; i++) {
+    pts.push({
+      name: Object.keys(hostNameDict)[i],
+      info: hostNameDict[Object.keys(hostNameDict)[i]] 
+    });
   }
+	var easingFunction = function (t, b, c, d) {
+		if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
+		return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+	};
 
-
-  //// 3. Visualize, Animate, Interact
+  // 3. Visualize, Animate, Interact
   space.add({
     animate: function(time, fps, context) {
-
+      if(typeof tt !== "object") {
+        tt = new Timer(1000)
+        tt.start()
+      }
       for (var i=0; i<pts.length; i++) {
-
-        // rotate the points slowly
         var pt = pts[i];
-        pt.rotate2D( Const.one_degree / 20, center );
-        form.stroke( false ).fill( colors["a" + (i % 4)] ).point( pt, 1 );
-
-        // get line from pt to the mouse line
-        var ln = new Line( pt ).to( target );
-
-        // opacity of line derived from distance to the line
-        var opacity = Math.min( 0.8, 1 - Math.abs( line.getDistanceFromPoint( pt ) ) / r );
-        form.stroke( "rgba(255,255,255," + opacity + ")", 2*(i%20)/20 ).fill( false ).line( ln );
-        var cd = hostNameDict[trackers[i]];
-        var ptV = new Vector( pt );
-        //form.fill("rgba(0,0,0,0.8").stroke("#eee").rect( new Pair(ptV.$add(10,0)).to(ptV.$add(15*trackers[i].length + 30,15) ))
-        form.font(15,"monospace").fill("white").text(new Point(pt), trackers[i] + `  ${cd.allowCount} / ${cd.blockCount} (${cd.totalBlockCount}/${cd.totalAllowCount})`, 10000, 10, 15 )
+        var neg = i > pts.length/2 ? -1 : 1;
+        var j = easingFunction(tt.check(),0,1,1);
+        var point = centerleft
+                  .$add(new Vector(space.size.x-200,(space.size.y/(pts.length-1))*i).subtract(centerleft).multiply(j)) 
+        form.fill( "white" )
+        form.circle( new Circle( point ).setRadius(2) )
+        form.fill(`rgba(255,255,255,${j}` )
+        form.font(15,"Roboto Slab")
+        form.text( point, pt.name, 10000, 10, 5 )
+        form.line( new Pair(centerleft).to(point))
       }
     }
   });
+
 
   // 4. Start playing
   space.bindMouse();
