@@ -1,6 +1,5 @@
 (function() {
 
-  console.log("draw.js")
 var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore;
 var body = document.querySelector("body");
 
@@ -81,7 +80,6 @@ function makeCurveSpace() {
   var trackers = Object.keys(hostNameDict);
 
   for (var i=0; i<trackers.length; i++) {
-    
     pts.push( new PointSet( target ) );
   }
 
@@ -95,12 +93,6 @@ function makeCurveSpace() {
         var pt = pts[i];
         form.stroke( "#fff", 2 );
         form.curve( new Curve( target ).to( target.$add(100, 20*i), target.$add(200, 30*i) ).bezier(20) );
-
-        // opacity of line derived from distance to the line
-        //var opacity = Math.min( 0.8, 1 - Math.abs( line.getDistanceFromPoint( pt ) ) / r );
-        //form.stroke( "rgba(255,255,255," + opacity + ")", 2*(i%20)/20 ).fill( false ).line( ln );
-        //var cd = hostNameDict[trackers[i]];
-        //form.font(15,"monospace").fill("white").text(new Point(pt), trackers[i] + `  ${cd.allowCount} / ${cd.blockCount} (${cd.totalBlockCount}/${cd.totalAllowCount})`, 10000, 10, 15 )
       }
     }
   });
