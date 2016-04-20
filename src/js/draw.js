@@ -2,17 +2,24 @@
 
 var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore;
 var body = document.querySelector("body");
+var screenshot = document.getElementById("ext-image");
+if(screenshot !== null) {
+  //screenshot.classList.remove("ext-canvas-slide")
+  screenshot.style.animationPlayState = "running"
+  document.getElementById("space").classList.add("ext-canvas-hide")
+  console.log(document.getElementById("space").className)
 
-vAPI.messaging.send(
-  'screenshot',
-  { what: 'getScreenshotAndSiteInfo'},
-  function(res) {
-    pageStore = res.pageStore 
-    hostNameDict = res.hostNameDict;
-    doItAll(res.screenshot);
-  }
-);
-
+} else {
+  vAPI.messaging.send(
+    'screenshot',
+    { what: 'getScreenshotAndSiteInfo'},
+    function(res) {
+      pageStore = res.pageStore;
+      hostNameDict = res.hostNameDict;
+      doItAll(res.screenshot);
+    }
+  );
+}
 
 function doItAll(msg) {
 
@@ -22,30 +29,30 @@ function doItAll(msg) {
   ptCanvas = document.createElement("canvas");
   ptCanvas.setAttribute("id", "ext-ptCanvas");
 
-  //ptCanvas.width = window.innerWidth;
-  //ptCanvas.height = window.innerHeight;
-  //ptCanvas.classList.add("ext-canvas");
-
   image = document.createElement("img");
   image.setAttribute("id", "ext-image");
   image.classList.add("ext-image");
   container.appendChild(image);
 
-  //ctx = canvas.getContext('2d');
   resizeCanvas();
 
-  //var img = new Image;
-  //img.onload = function(){
-    //ctx.drawImage(img,0,0, canvas.width, canvas.height); 
-  //};
   image.src = msg;
 
   body.appendChild(container);
   space = new CanvasSpace().display("#ext-canvas-container");
-  makeSpace();
 
+  image.addEventListener("animationend", function(e) {
+    document.body.removeChild(container)
+    console.log(e)
+  }, false)
+
+  image.addEventListener("animationiteration", function(e) {
+    image.style.animationPlayState = "paused";
+    console.log(e)
+  }, false)
+
+  makeSpace();
   image.classList.add("ext-canvas-slide");
-  //canvas.classList.add("ext-canvas-hide");
 
   window.addEventListener('resize', resizeCanvas, false);
 }
@@ -61,42 +68,6 @@ function resizeCanvas() {
 
 // –––––––––
 
-function makeCurveSpace() {
-
-  var colors = {
-    a1: "#ff2d5d", a2: "#42dc8e", a3: "#2e43eb", a4: "#ffe359",
-    b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
-  };
-  var form = new Form( space );
-
-
-  //// 2. Create Elements
-  var pts = [];
-  var center = space.size.$divide(2);
-  var line = new Line(center).to( space.size );
-  var target = new Vector( center );
-
-  var trackers = Object.keys(hostNameDict);
-
-  for (var i=0; i<trackers.length; i++) {
-    pts.push( new PointSet( target ) );
-  }
-
-  space.add({
-    animate: function(time, fps, context) {
-
-      for (var i=0; i<pts.length; i++) {
-
-        var pt = pts[i];
-        form.stroke( "#fff", 2 );
-        form.curve( new Curve( target ).to( target.$add(100, 20*i), target.$add(200, 30*i) ).bezier(20) );
-      }
-    }
-  });
-
-  space.bindMouse();
-  space.play();
-}
 function makeSpace() {
 
   var colors = {
@@ -104,7 +75,6 @@ function makeSpace() {
     b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
   };
   var form = new Form( space );
-
 
   //// 2. Create Elements
   var pts = [];
@@ -118,7 +88,7 @@ function makeSpace() {
   for (var i=0; i<Object.keys(hostNameDict).length; i++) {
     pts.push({
       name: Object.keys(hostNameDict)[i],
-      info: hostNameDict[Object.keys(hostNameDict)[i]] 
+      info: hostNameDict[Object.keys(hostNameDict)[i]]
     });
   }
 	var easingFunction = function (t, b, c, d) {
@@ -126,19 +96,18 @@ function makeSpace() {
 		return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
 	};
 
+  var tt = new Timer(1000)
+  tt.start()
+
   // 3. Visualize, Animate, Interact
   space.add({
     animate: function(time, fps, context) {
-      if(typeof tt !== "object") {
-        tt = new Timer(1000)
-        tt.start()
-      }
       for (var i=0; i<pts.length; i++) {
         var pt = pts[i];
         var neg = i > pts.length/2 ? -1 : 1;
         var j = easingFunction(tt.check(),0,1,1);
         var point = centerleft
-                  .$add(new Vector(space.size.x-200,(space.size.y/(pts.length-1))*i).subtract(centerleft).multiply(j)) 
+                  .$add(new Vector(space.size.x-200,(space.size.y/(pts.length-1))*i).subtract(centerleft).multiply(j))
         form.fill( "white" )
         form.circle( new Circle( point ).setRadius(2) )
         form.fill(`rgba(255,255,255,${j}` )
@@ -148,7 +117,6 @@ function makeSpace() {
       }
     }
   });
-
 
   // 4. Start playing
   space.bindMouse();
@@ -168,7 +136,7 @@ function typeH1() {
   [].slice.call(document.getElementsByTagName("h1")).sort((pre, cur) => {
     return (
       (cur.getBoundingClientRect().width * cur.getBoundingClientRect().height) -
-      (pre.getBoundingClientRect().width * pre.getBoundingClientRect().height) 
+      (pre.getBoundingClientRect().width * pre.getBoundingClientRect().height)
     )
   }).map((el, i) => {
     if(i === 0) {
