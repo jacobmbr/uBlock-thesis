@@ -9,6 +9,7 @@
   transition: background-position 0.5s ease-in-out;
 }
 #indicator-container {
+  z-index:1000000091 !important;
   height: 50px;
   width: 50px;
   position: fixed;
