@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
 
-    "name": "uBlock Origin JACOB",
-    "version": "1.6.9",
+    "name": "Jacob's Trusty Tracker",
+    "version": "0.0.0.1",
 
     "default_locale": "en",
     "description": "__MSG_extShortDesc__",
@@ -51,6 +51,9 @@
     "options_ui": {
         "page": "options_ui.html"
     },
+    "web_accessible_resources": [
+      "img/*"
+    ],
     "permissions": [
         "activeTab",
         "contextMenus",

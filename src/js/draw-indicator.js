@@ -8,7 +8,6 @@
   });
   var form = new Form( sp );
 
-  console.log(vAPI)
   vAPI.messaging.send(
     'screenshot',
     { what: 'getCounts'},
@@ -19,15 +18,16 @@
   function drawIndicator(blockCounts) {
     var center = new Vector( sp.size.x/2, sp.size.y/2 )
     var pts = []
-    for(i=0;i<blockCounts.block+blockCounts.allow;i++) {pts.push( new Vector(Util.randomRange(0,sp.size.x/2),Util.randomRange(0,sp.size.y/2) ))}
+    for(i=0;i<blockCounts.allow;i++) { pts.push({vec: new Vector(Util.randomRange(0,3),Util.randomRange(0,3)).moveBy(center), a: 1})  }
+    for(i=0;i<blockCounts.block;i++) { pts.push({vec: new Vector(Util.randomRange(0,12),Util.randomRange(0,12)).moveBy(center).rotate2D( Util.randomRange(0,360)*Const.one_degree, center), a: 0})  }
     sp.add({
       animate: function(time, fps, context) {
         for(i=0;i<pts.length;i++) {
           //form.triangle( new Triangle(center).to(10,30) );
-          var curpt =  new Point( pts[i].rotate2D( (i+1)*Const.one_degree/4, center ) );
+          var curpt =  new Point( pts[i].vec.rotate2D( Util.randomRange(0,10)*Const.one_degree/8, center ) );
           form.fill("black").stroke("#eee")
           form.line( new Line(center).to( curpt ) );
-          form.fill(i % 2 === 0 ? "#ff2d5d" : "#42dc8e").stroke(0)
+          form.fill( pts[i].a === 0 ? "#ff2d5d" : "#42dc8e").stroke(0)
           form.circle( new Circle( curpt ).setRadius(2) )
         }
         //form.rect( new Rectangle(0,0,sp.size.x,sp.size.y) )

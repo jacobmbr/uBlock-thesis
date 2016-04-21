@@ -1,8 +1,9 @@
 (function() {
 
-  var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore,right,top;
+  var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore,right,top,screenRight, fontScript, hostname;
   var body = document.querySelector("body");
   var screenshot = document.getElementById("ext-image");
+  var bgc = "#07263b";
 
   if(document.getElementById("ext-canvas-container")) {
     if(screenshot) screenshot.style.animationPlayState = "running"
@@ -16,12 +17,12 @@
         pageStore = res.pageStore;
         hostNameDict = res.hostNameDict;
         window.extHasFired = true;
-        doItAll(res.screenshot);
+        doItAll(res.screenshot, pageStore);
       }
     );
   }
 
-  function doItAll(msg) {
+  function doItAll(msg, pageStore) {
 
     container = document.createElement("div");
     container.setAttribute("id", "ext-canvas-container");
@@ -38,6 +39,7 @@
 
     body.appendChild(container);
     space = new CanvasSpace().display("#ext-canvas-container");
+
     resizeCanvas(space);
 
     image.addEventListener("animationend", function(e) {
@@ -49,7 +51,7 @@
       image.style.animationPlayState = "paused";
     }, false)
 
-    makeSpace();
+    makeSpace(pageStore);
     image.classList.add("ext-canvas-slide");
 
     window.addEventListener('resize', resizeCanvas, false);
@@ -65,7 +67,7 @@
 
   // –––––––––
 
-  function makeSpace() {
+  function makeSpace(pageStore) {
 
     var colors = {
       a1: "#ff2d5d", a2: "#42dc8e", a3: "#2e43eb", a4: "#ffe359",
@@ -112,18 +114,25 @@
           var pt = pts[i];
           var neg = i > pts.length/2 ? -1 : 1;
           var j = easingFunction(tt.check(),0,1,1);
-          var point = centerleft
-                    .$add(new Vector(space.size.x-200,(space.size.y/(pts.length-1))*i).subtract(centerleft).multiply(j))
+          var point = centerleft.$add(
+              new Vector(space.size.x-400,((space.size.y-200)/(pts.length-1))*i + 100)
+              .subtract(centerleft)
+              .multiply(j)
+            )
           form.fill(`rgba(255,255,255,${j}` )
           form.font(15,"monospace")
           form.text( point, pt.name, 10000, 10, 5 )
           form.stroke("white", 1)
-          form.circle( new Circle( point ).setRadius(Math.max(2,Math.round(Math.max(pts[i].info.allowCount, pts[i].info.blockCount))) ) )
-          form.fill( colors["a"+(i > 7 ? 1 : i+1)]).stroke(0)
+          var radius = Math.min(12,Math.round(Math.max(pts[i].info.allowCount, pts[i].info.blockCount)));
+          form.fill( pts[i].info.blockCount > 0 ? "rgba(255,0,0,0.5)" : "rgba(0,255,0,0.5)").stroke(0)
+          form.circle( new Circle( point ).setRadius(Math.max(radius,4)) )
 
           var pair =  new Pair(centerleft).to(point);
-          form.stroke("white", 2).line( pair )
+          form.stroke("rgba(255,255,255,0.4)", 1).line( pair )
+          form.stroke(0)
           form.circle( new Circle(pair.interpolate(Easing.quadOut(tr.check(),0,1,1))).setRadius(Easing.quadOut(tr.check(),0,3,1)) )
+          form.fill("rgba(255,255,255,0.9)").stroke(false).font(25, "monospace").text( new Point(img.left, img.top-50), pageStore.tabHostname )
+          form.font(18, "monospace").text( new Point(img.left, img.top-30), "sent " + pageStore.perLoadAllowedRequestCount + " Requests, " + pageStore.perLoadBlockedRequestCount + " to third parties" )
         }
       }
     });
@@ -134,25 +143,60 @@
   }
 
   function setupSpaces() {
+    rightright = document.createElement("div");
+    rightright.setAttribute("id", "rightright-space");
+    rightright.style.backgroundColor = bgc;
+    rightright.style.backgroundImage = "url(" + chrome.extension.getURL("img/rightright.png") + ")";
+    rightright.style.backgroundSize = "auto 100%";
+    rightright.style.backgroundRepeat = "no-repeat";
+    var rrimg = document.createElement("img")
+    rrimg.src = chrome.extension.getURL("img/rightright.png");
+    rightright.appendChild(rrimg)
+    document.body.appendChild(rightright);
+
     right = document.createElement("div");
     right.setAttribute("id", "right-space");
+    right.style.backgroundColor = bgc;
+    right.style.backgroundImage = "url(" + chrome.extension.getURL("img/screenright.png") + ")";
+    right.style.backgroundSize = "auto 100%";
+    right.style.backgroundRepeat = "no-repeat";
     document.body.appendChild(right);
 
     top = document.createElement("div");
     top.setAttribute("id", "top-space");
-    top.style.background = `black url(${space.space.toDataURL()}) no-repeat left top`;
+    top.style.background = `${bgc} url(${ chrome.extension.getURL("img/top.png")}) no-repeat left top`;
+    top.style.backgroundPosition = "center center";
+    top.style.backgroundSize = "contain"
     document.body.appendChild(top);
   }
 
   document.addEventListener("keydown", moveCanvas );
+  var isLeft = false;
 
   function moveCanvas(e) {
     if(e.key === "ArrowRight") {
-      container.classList.add("move-left");
-      right.classList.add("move-left");
+      if(right.classList.contains("move-left")) {
+        container.classList.add("move-left-left");
+        right.classList.add("move-left-left");
+        rightright.classList.add("move-left-left");
+      } else {
+        container.classList.add("move-left");
+        rightright.classList.add("move-left");
+        right.classList.add("move-left");
+      }
     } else if (e.key === "ArrowLeft") {
-      container.classList.remove("move-left");
-      right.classList.remove("move-left");
+      if(container.classList.contains("move-left-left")) {
+        container.classList.remove("move-left-left");
+        right.classList.remove("move-left-left");
+        rightright.classList.remove("move-left-left");
+        container.classList.add("move-left");
+        rightright.classList.add("move-left");
+        right.classList.add("move-left");
+      } else {
+        container.classList.remove("move-left");
+        right.classList.remove("move-left");
+        rightright.classList.remove("move-left");
+      }
     } else if (e.key === "ArrowUp") {
       container.classList.add("move-down");
       top.classList.add("move-down");

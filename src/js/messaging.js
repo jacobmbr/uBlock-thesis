@@ -460,6 +460,7 @@ var onMessage = function(request, sender, callback) {
         console.log(img)
         callback({
           screenshot: img,
+          popupData: popupDataFromTabId(),
           pageStore: pageStore,
           hostNameDict: getHostnameDict(pageStore.hostnameToCountMap)
         });
