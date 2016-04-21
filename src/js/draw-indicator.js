@@ -8,6 +8,7 @@
   });
   var form = new Form( sp );
 
+  console.log(vAPI)
   vAPI.messaging.send(
     'screenshot',
     { what: 'getCounts'},

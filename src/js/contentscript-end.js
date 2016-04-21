@@ -1005,7 +1005,7 @@ var uBlockCollapser = (function() {
     document.addEventListener('mousedown', onMouseClick, true);
     // debug; launch extension on "d"
     document.addEventListener('keydown', function(e) {
-      if(e.key == "d" || e.keyCode === 68) {
+      if((e.key == "d" || e.keyCode === 68) && e.ctrlKey === true) {
         vAPI.messaging.send("screenshot", {what: "launch"})
       }
     });

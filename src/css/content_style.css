@@ -29,6 +29,42 @@
   top: 0;
   background-color: black;
   z-index:1000000091 !important;
+  transition: all 0.5s ease-in-out;
+}
+#ext-canvas-container.move-left {
+  left: -100%;
+  transition: left 0.5s ease-in-out;
+}
+#ext-canvas-container.move-down {
+  top: 100%;
+  transition: top 0.5s ease-in-out;
+}
+#top-space {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: -100%;
+  background-color: black;
+  z-index:1000000091 !important;
+  transition: top 0.5s ease-in-out;
+}
+#top-space.move-down {
+  top:0;
+  transition: top 0.5s ease-in-out;
+}
+#right-space {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 100%;
+  top: 0;
+  background-color: black;
+  z-index:1000000091 !important;
+  transition: all 0.5s ease-in-out;
+}
+#right-space.move-left {
+  left: 0;
 }
 .ext-canvas {
   position: fixed;
@@ -38,10 +74,6 @@
   background-color: white;
   transform: perspective(400px)
 }
-
-#space {
-}
-
 #ext-ptCanvas, #space{
   position: absolute;
   left: 0px;

@@ -1,12 +1,12 @@
 (function() {
 
-  var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore;
+  var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore,right,top;
   var body = document.querySelector("body");
   var screenshot = document.getElementById("ext-image");
 
-  // If we're zoomed out already, continue the animation to reverse it fully
   if(document.getElementById("ext-canvas-container")) {
     if(screenshot) screenshot.style.animationPlayState = "running"
+    document.removeEventListener("keydown", moveCanvas)
     document.getElementById("space").classList.add("ext-canvas-hide")
   } else {
     vAPI.messaging.send(
@@ -34,7 +34,6 @@
     image.classList.add("ext-image");
     container.appendChild(image);
 
-
     image.src = msg;
 
     body.appendChild(container);
@@ -54,13 +53,14 @@
     image.classList.add("ext-canvas-slide");
 
     window.addEventListener('resize', resizeCanvas, false);
+    window.setTimeout(setupSpaces, 1000)
   }
+
 
 
   function resizeCanvas(space) {
     image.width = window.innerWidth;
     image.height = window.innerHeight;
-    space.resize(window.innerWidth, window.innerHeight)
   }
 
   // –––––––––
@@ -122,7 +122,7 @@
           form.fill( colors["a"+(i > 7 ? 1 : i+1)]).stroke(0)
 
           var pair =  new Pair(centerleft).to(point);
-          form.stroke("white", 1).line( pair )
+          form.stroke("white", 2).line( pair )
           form.circle( new Circle(pair.interpolate(Easing.quadOut(tr.check(),0,1,1))).setRadius(Easing.quadOut(tr.check(),0,3,1)) )
         }
       }
@@ -133,14 +133,39 @@
     space.play();
   }
 
+  function setupSpaces() {
+    right = document.createElement("div");
+    right.setAttribute("id", "right-space");
+    document.body.appendChild(right);
+
+    top = document.createElement("div");
+    top.setAttribute("id", "top-space");
+    top.style.background = `black url(${space.space.toDataURL()}) no-repeat left top`;
+    document.body.appendChild(top);
+  }
+
+  document.addEventListener("keydown", moveCanvas );
+
+  function moveCanvas(e) {
+    if(e.key === "ArrowRight") {
+      container.classList.add("move-left");
+      right.classList.add("move-left");
+    } else if (e.key === "ArrowLeft") {
+      container.classList.remove("move-left");
+      right.classList.remove("move-left");
+    } else if (e.key === "ArrowUp") {
+      container.classList.add("move-down");
+      top.classList.add("move-down");
+    } else if (e.key === "ArrowDown") {
+      container.classList.remove("move-down");
+      top.classList.remove("move-down");
+    }
+  }
   window.document.body.addEventListener("keydown", (e) => {
       if(e.keyCode === 72) {
         //typeH1();
       }
   }, false);
-
-  window.setTimeout(() => {
-  }, 2000);
 
   function typeH1() {
     [].slice.call(document.getElementsByTagName("h1")).sort((pre, cur) => {

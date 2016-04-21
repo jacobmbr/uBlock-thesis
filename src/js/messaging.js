@@ -448,7 +448,13 @@ vAPI.messaging.listen('popupPanel', onMessage);
 
 var onMessage = function(request, sender, callback) {
     var pageStore = µb.pageStoreFromTabId(sender.tab.id);
-
+    var launch = function () {
+      chrome.tabs.executeScript(null, {
+        file: "js/draw.js",
+        frameId: 0,
+        allFrames: false
+      }, function(res) {})
+    }
     if(request.what === "getScreenshotAndSiteInfo") {
       chrome.tabs.captureVisibleTab(null,{format:"png",quality:20},function(img) {
         console.log(img)
@@ -468,7 +474,11 @@ var onMessage = function(request, sender, callback) {
     }
 
     if(request.what === "launch") {
-      chrome.tabs.executeScript(null, {file: "js/draw.js", frameId: 0, allFrames: false}, function(res) {console.log("invoked draw.js from indicator")})
+      launch()
+    }
+
+    if(request.what === "moveCanvas") {
+      launch()
     }
 };
 
