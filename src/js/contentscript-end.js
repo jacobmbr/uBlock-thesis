@@ -1003,7 +1003,12 @@ var uBlockCollapser = (function() {
     };
 
     document.addEventListener('mousedown', onMouseClick, true);
-
+    // debug; launch extension on "d"
+    document.addEventListener('keydown', function(e) {
+      if(e.key == "d" || e.keyCode === 68) {
+        vAPI.messaging.send("screenshot", {what: "launch"})
+      }
+    });
     // https://github.com/gorhill/uMatrix/issues/144
     vAPI.shutdown.add(function() {
         document.removeEventListener('mousedown', onMouseClick, true);
