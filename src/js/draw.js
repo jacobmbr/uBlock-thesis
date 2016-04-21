@@ -3,12 +3,11 @@
   var canvas, ctx, container, ptCanvas, space, hostNameDict, pageStore;
   var body = document.querySelector("body");
   var screenshot = document.getElementById("ext-image");
-  //
+
   // If we're zoomed out already, continue the animation to reverse it fully
-  if(screenshot !== null) {
-    screenshot.style.animationPlayState = "running"
+  if(document.getElementById("ext-canvas-container")) {
+    if(screenshot) screenshot.style.animationPlayState = "running"
     document.getElementById("space").classList.add("ext-canvas-hide")
-    console.log(document.getElementById("space").className)
   } else {
     vAPI.messaging.send(
       'screenshot',
@@ -16,6 +15,7 @@
       function(res) {
         pageStore = res.pageStore;
         hostNameDict = res.hostNameDict;
+        window.extHasFired = true;
         doItAll(res.screenshot);
       }
     );
@@ -42,6 +42,7 @@
     resizeCanvas(space);
 
     image.addEventListener("animationend", function(e) {
+      space.pause();
       document.body.removeChild(container)
     }, false)
 
@@ -68,7 +69,7 @@
 
     var colors = {
       a1: "#ff2d5d", a2: "#42dc8e", a3: "#2e43eb", a4: "#ffe359",
-      b1: "#96bfed", b2: "#f5ead6", b3: "#f1f3f7", b4: "#e2e6ef"
+      a5: "#96afed", a6: "#f5ead6", a7: "#f1f3f7", a8: "#e2e6ef"
     };
     var form = new Form( space );
 
@@ -87,6 +88,10 @@
         info: hostNameDict[Object.keys(hostNameDict)[i]]
       });
     }
+
+    pts.sort(function(prev,next){
+      return prev.info.blockCount > next.info.blockCount
+    });
     var easingFunction = function (t, b, c, d) {
       if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
       return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
@@ -100,6 +105,8 @@
     // 3. Visualize, Animate, Interact
     space.add({
       animate: function(time, fps, context) {
+        img = document.getElementById("ext-image").getBoundingClientRect();
+        centerleft = new Vector( img.left,img.top+img.height/2 );
         if(tr.check() === 1) {tr.start(true)}
         for (var i=0; i<pts.length; i++) {
           var pt = pts[i];
@@ -107,14 +114,15 @@
           var j = easingFunction(tt.check(),0,1,1);
           var point = centerleft
                     .$add(new Vector(space.size.x-200,(space.size.y/(pts.length-1))*i).subtract(centerleft).multiply(j))
-          form.fill( "white" )
-          form.circle( new Circle( point ).setRadius(3) )
           form.fill(`rgba(255,255,255,${j}` )
-          form.font(15,"Roboto Slab")
+          form.font(15,"monospace")
           form.text( point, pt.name, 10000, 10, 5 )
           form.stroke("white", 1)
+          form.circle( new Circle( point ).setRadius(Math.max(2,Math.round(Math.max(pts[i].info.allowCount, pts[i].info.blockCount))) ) )
+          form.fill( colors["a"+(i > 7 ? 1 : i+1)]).stroke(0)
+
           var pair =  new Pair(centerleft).to(point);
-          form.line( pair )
+          form.stroke("white", 1).line( pair )
           form.circle( new Circle(pair.interpolate(Easing.quadOut(tr.check(),0,1,1))).setRadius(Easing.quadOut(tr.check(),0,3,1)) )
         }
       }

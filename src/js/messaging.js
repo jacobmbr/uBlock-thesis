@@ -450,7 +450,8 @@ var onMessage = function(request, sender, callback) {
     var pageStore = µb.pageStoreFromTabId(sender.tab.id);
 
     if(request.what === "getScreenshotAndSiteInfo") {
-      chrome.tabs.captureVisibleTab(null,{format:"png",quality:60},function(img) {
+      chrome.tabs.captureVisibleTab(null,{format:"png",quality:20},function(img) {
+        console.log(img)
         callback({
           screenshot: img,
           pageStore: pageStore,
@@ -464,6 +465,10 @@ var onMessage = function(request, sender, callback) {
         allow: pageStore.perLoadAllowedRequestCount,
         block: pageStore.perLoadBlockedRequestCount
       });
+    }
+
+    if(request.what === "launch") {
+      chrome.tabs.executeScript(null, {file: "js/draw.js", frameId: 0, allFrames: false}, function(res) {console.log("invoked draw.js from indicator")})
     }
 };
 

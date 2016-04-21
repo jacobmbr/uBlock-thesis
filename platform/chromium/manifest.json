@@ -33,14 +33,14 @@
         },
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["js/contentscript-end.js", "lib/pt.js", "js/draw-indicator.js"],
+            "js": ["js/contentscript-end.js", "lib/pt.js"],
             "css": ["css/content_style.css"],
             "run_at": "document_end",
             "all_frames": true
         },
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["js/scriptlets/subscriber.js"],
+            "js": ["js/scriptlets/subscriber.js", "js/draw-indicator.js"],
             "run_at": "document_idle",
             "all_frames": false
         }
@@ -62,7 +62,8 @@
         "webRequest",
         "webRequestBlocking",
         "http://*/*",
-        "https://*/*"
+        "https://*/*",
+        "<all_urls>"
     ],
     "short_name": "uBlock₀",
     "storage": {
